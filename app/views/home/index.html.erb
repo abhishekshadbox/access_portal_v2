@@ -1,0 +1,68 @@
+<div class="container mt-5">
+  <!-- Hero Section -->
+  <div class="text-center mb-5">
+    <h1 class="display-4 text-primary fw-bold">Welcome to Access Portal 🚀</h1>
+    <p class="lead text-muted">Join organizations, explore curated posts, and share knowledge – securely and age-responsibly.</p>
+    <% if current_user %>
+    <% else %>
+      <%= link_to "Sign Up", new_user_registration_path, class: "btn btn-primary btn-lg mx-2 mt-3" %>
+      <%= link_to "Login", new_user_session_path, class: "btn btn-outline-secondary btn-lg mt-3" %>
+    <% end %>
+  </div>
+
+  <!-- How It Works -->
+  <div class="row text-center mb-5">
+    <div class="col-md-4">
+      <h3>🔍 Explore</h3>
+      <p>Browse a wide range of organizations and posts tailored to your interests.</p>
+    </div>
+    <div class="col-md-4">
+      <h3>🔐 Subscribe</h3>
+      <p>Join an organization after verification and meet eligibility criteria.</p>
+    </div>
+    <div class="col-md-4">
+      <h3>✍️ Contribute</h3>
+      <p>Create and share posts if you're a verified contributor.</p>
+    </div>
+  </div>
+
+  <!-- Featured Organizations -->
+  <h2 class="mb-4 text-primary">🏢 Featured Organizations</h2>
+  <div class="row">
+    <% @featured_organizations.each do |org| %>
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title"><%= org.name %></h5>
+            <p class="card-text"><%= truncate(org.description, length: 100) %></p>
+            <p class="text-muted">Minimum Age: <%= org.min_age_required %></p>
+            <%= link_to "View", organization_path(org), class: "btn btn-outline-primary btn-sm" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Popular Posts -->
+  <h2 class="mt-5 mb-4 text-primary">🔥 Popular Posts</h2>
+  <div class="row">
+    <% @popular_posts.each do |post| %>
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 border-0 shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title"><%= post.title %></h5>
+            <p class="card-text text-muted">Organization: <%= post.organization.name %></p>
+            <% if current_user && current_user.age < 18 && !current_user.parental_consent? %>
+              <div class="alert alert-warning">🛑 Requires Parental Consent</div>
+            <% elsif current_user && current_user.age < post.min_age_required %>
+              <div class="alert alert-warning">🔞 Age restriction not met</div>
+            <% else %>
+              <p><%= truncate(post.content, length: 120) %></p>
+              <%= link_to "Read More", organization_post_path(post.organization, post), class: "btn btn-outline-primary btn-sm" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

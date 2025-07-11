@@ -1,0 +1,67 @@
+<div class="container mt-5">
+  <div class="mb-4">
+    <h1 class="h3 fw-semibold">📚 Posts for <%= @organization.name %></h1>
+  </div>
+
+  <% if @organization.creator == current_user %>
+    <div class="card shadow-sm mb-5">
+      <div class="card-header bg-info text-white">
+        <h5 class="mb-0">✍️ Create New Post</h5>
+      </div>
+      <div class="card-body">
+        <%= form_with model: [@organization, @post], local: true do |f| %>
+          <div class="mb-3">
+            <%= f.label :title, class: "form-label" %>
+            <%= f.text_field :title, class: "form-control", placeholder: "Enter title" %>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :content, class: "form-label" %>
+            <%= f.text_area :content, rows: 4, class: "form-control", placeholder: "Write something..." %>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :min_age_required, class: "form-label" %>
+            <%= f.number_field :min_age_required, class: "form-control", placeholder: "e.g. 10" %>
+          </div>
+
+          <%= f.submit "Create Post", class: "btn btn-success" %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <h2 class="h5 fw-bold">📰 All Posts</h2>
+  </div>
+
+  <% if @posts.any? %>
+    <div class="row g-4">
+      <% @posts.each do |post| %>
+        <% next if post.nil? || post.id.nil? %>
+        <div class="col-md-6">
+          <div class="card h-100 shadow-sm border-0">
+            <div class="card-body">
+              <h5 class="card-title">
+                <%= link_to post.title, organization_post_path(@organization, post), class: "text-decoration-none text-primary" %>
+              </h5>
+              <h6 class="card-subtitle mb-1 text-muted">
+                🧒 Min Age: <%= post.min_age_required %>
+              </h6>
+              <% if post.creator.present? %>
+                <h6 class="card-subtitle mb-2 text-muted">
+                  👤 Created by: <%= post.creator&.name || post.creator&.email || "Unknown" %>
+                </h6>
+              <% end %>
+              <p class="card-text mt-2"><%= truncate(post.content, length: 120) %></p>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="alert alert-warning mt-3 text-center">
+      🚫 No posts found for this organization.
+    </div>
+  <% end %>
+</div>

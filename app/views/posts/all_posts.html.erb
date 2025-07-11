@@ -1,0 +1,40 @@
+<div class="container mt-5">
+  <h1 class="mb-4 text-center text-primary">📢 All Eligible Posts from Your Subscribed Organizations</h1>
+
+  <% if @posts.any? %>
+    <div class="row">
+      <% @posts.each do |post| %>
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="card h-100 shadow-sm border-0">
+            <div class="card-body">
+              <h5 class="card-title fw-bold"><%= post.title %></h5>
+
+              <h6 class="card-subtitle mb-2 text-muted">
+                <strong>Organization:</strong> <%= post.organization.name %><br>
+                <strong>Min Age:</strong> <%= post.min_age_required %>
+              </h6>
+
+              <% if post.creator.present? %>
+                <h6 class="card-subtitle mb-2 text-muted">
+                  👤 Created by: <%= post.creator.name || post.creator.email || "Unknown" %>
+                </h6>
+              <% end %>
+
+              <% if current_user.date_of_birth && ((Date.today - current_user.date_of_birth).to_i / 365) < 10 && !current_user.parental_consent? %>
+                <div class="alert alert-warning mt-3 mb-0">
+                  🔒 You are below 10 Parental consent is required to view this content.
+                </div>
+              <% else %>
+                <p class="card-text mt-3"><%= truncate(post.content, length: 160) %></p>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="alert alert-info text-center" role="alert">
+      No posts available for your age group or subscriptions.
+    </div>
+  <% end %>
+</div>

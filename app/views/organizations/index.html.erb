@@ -1,0 +1,87 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>All Organizations</h2>
+    <div>
+        <% if current_user.age >= 18 || current_user.parental_consent? %>
+          <%= link_to "Create Organization", new_organization_path, class: "btn btn-primary me-2" %>
+        <% else %>
+          <div class="btn btn-primary me-2">You need parental consent to create an organization.</div>
+        <% end %>
+        <%= link_to "View All Posts", all_posts_path, class: "btn btn-outline-primary" %>
+    </div>
+  </div>
+
+  <hr>
+
+  <h3 class="mt-4">My Organizations</h3>
+  <% if @my_organizations.any? %>
+    <div class="row">
+      <% @my_organizations.each do |org| %>
+        <div class="col-md-6 col-lg-4 mb-4">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h5 class="card-title"><%= org.name %></h5>
+              <div class="d-flex flex-wrap gap-2">
+                <%= link_to "Verify Requests", verify_requests_organization_path(org), class: "btn btn-sm btn-warning" %>
+                <%= link_to "View & Manage Posts", organization_posts_path(org), class: "btn btn-sm btn-success" %>
+                <%= link_to "📈 Analytics", analytics_organization_path(org), class: "btn btn-outline-primary btn-sm" %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-muted">You haven't created any organizations yet.</p>
+  <% end %>
+
+  <hr>
+
+<h3 class="mt-4">Other Organizations</h3>
+<% if @other_organizations.any? %>
+  <div class="row">
+    <% @other_organizations.each do |org| %>
+      <% subscribed = @subscriptions.find { |s| s.organization_id == org.id } %>
+      <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title"><%= org.name %></h5>
+
+            <!-- 👇 Age Criteria -->
+            <p class="text-muted mb-2">
+              📋 Min Age Required: <strong><%= org.min_age_required %> years</strong>
+            </p>
+
+            <% if subscribed %>
+              <% if subscribed.verified? %>
+                <span class="badge bg-success p-2">✅ Subscribed</span>
+
+                <% if subscribed.role == "contributor" %>
+                  <%= link_to "✍️ Write Post", new_organization_post_path(org), class: "btn btn-sm btn-outline-success mt-2" %>
+                <% end %>
+
+              <% else %>
+                <span class="badge bg-secondary">⏳ Pending Verification</span>
+              <% end %>
+            <% else %>
+              <% if current_user.date_of_birth.present? %>
+                <% user_age = ((Time.zone.today - current_user.date_of_birth).to_i / 365.25).floor %>
+                <% if user_age >= org.min_age_required.to_i %>
+                  <%= button_to "Subscribe", subscribe_organization_path(org), method: :post, class: "btn btn-sm btn-outline-primary mt-2", data: { turbo: false } %>
+                <% else %>
+                  <span class="badge bg-danger p-2">❌ Age criteria not met</span>
+                <% end %>
+              <% else %>
+                <span class="badge bg-warning p-2">⚠️ Date of birth not set</span>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <p class="text-muted">No other organizations available.</p>
+<% end %>
+
+</div>

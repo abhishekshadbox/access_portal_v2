@@ -1,0 +1,38 @@
+<div class="container mt-5">
+  <h2 class="text-center mb-4 text-primary">
+    🔐 Pending Verification Requests for <%= @organization.name %>
+  </h2>
+
+  <% if @pending_subscriptions.any? %>
+    <div class="table-responsive shadow rounded bg-white p-3">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-primary">
+          <tr>
+            <th>Email</th>
+            <th class="text-center">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @pending_subscriptions.each do |subscription| %>
+            <tr>
+              <td class="fw-medium"><%= subscription.user.email %></td>
+              <td class="text-center d-flex justify-content-center gap-2">
+                <%= button_to "👁️ Verify as Viewer", verify_user_organization_path(@organization, user_id: subscription.user.id, role: "viewer"),
+                              method: :post,
+                              class: "btn btn-outline-primary btn-sm" %>
+
+                <%= button_to "✍️ Verify as Contributor", verify_user_organization_path(@organization, user_id: subscription.user.id, role: "contributor"),
+                              method: :post,
+                              class: "btn btn-outline-success btn-sm" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="alert alert-info text-center mt-4" role="alert">
+      📭 No pending verification requests at the moment.
+    </div>
+  <% end %>
+</div>

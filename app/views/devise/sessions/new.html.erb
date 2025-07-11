@@ -1,0 +1,32 @@
+<div class="container mt-5">
+  <div class="card shadow p-4">
+    <h2 class="mb-4 text-center">🔐 Log in to Your Account</h2>
+
+    <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "needs-validation", novalidate: true }) do |f| %>
+      <div class="mb-3">
+        <%= f.label :email, class: "form-label" %>
+        <%= f.email_field :email, class: "form-control", autofocus: true, autocomplete: "email", required: true %>
+      </div>
+
+      <div class="mb-3">
+        <%= f.label :password, class: "form-label" %>
+        <%= f.password_field :password, class: "form-control", autocomplete: "current-password", required: true %>
+      </div>
+
+      <% if devise_mapping.rememberable? %>
+        <div class="form-check mb-3">
+          <%= f.check_box :remember_me, class: "form-check-input", id: "remember_me" %>
+          <%= f.label :remember_me, class: "form-check-label", for: "remember_me" %>
+        </div>
+      <% end %>
+
+      <div class="text-center">
+        <%= f.submit "Log in", class: "btn btn-success w-100" %>
+      </div>
+    <% end %>
+
+    <div class="mt-4 text-center">
+      <%= render "devise/shared/links" %>
+    </div>
+  </div>
+</div>
